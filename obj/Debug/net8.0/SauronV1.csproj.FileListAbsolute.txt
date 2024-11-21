@@ -1,0 +1,17 @@
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.csproj.AssemblyReference.cache
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.AssemblyInfoInputs.cache
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.AssemblyInfo.cs
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.csproj.CoreCompileInputs.cache
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\SauronV1.exe
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\SauronV1.deps.json
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\SauronV1.runtimeconfig.json
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\SauronV1.dll
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\SauronV1.pdb
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\RestSharp.dll
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.csproj.Up2Date
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.dll
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\refint\SauronV1.dll
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.pdb
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.genruntimeconfig.cache
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\ref\SauronV1.dll
