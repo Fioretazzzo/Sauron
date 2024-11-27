@@ -1,30 +1,49 @@
 using System;
 using System.Timers;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
+
 
 public class Internos
 {
-    public int Numero {get; set; }
+    public string Numero {get; set; }
 
     public string Linea {get; set; }
 
-    public double? Lat {get; set; }
+    public Coodinates[] Coord {get; set; }
 
-    public double? Lng {get; set; }
+    public bool OnBase {get; set; }
 
-    public bool isSleep {get; set; }
+    public TimeSpan? TimeSleep {get; set; }
 
-    public TimeSpan? timeSleep {get; set; }
-
-    public bool onStartLine {get; set; }
+    public bool? OnStartLine {get; set; }
 
     public bool Oculto {get; set; }
 
-    public TimeSpan? timeOutOfTrack {get; set; }
+    public string ServiceStatus {get; set; }
 
-    public Internos(int numero, string linea, double lat, double lng, bool oculto){
+    public TimeSpan? TimeOutOfTrack {get; set; }
+
+    public Internos(string numero, string linea, bool oculto, string ServiceStatus, double? lat, double? lng){
+        this.Numero = numero;
+        this.Linea = linea;
+        this.Oculto = oculto;
+        this.ServiceStatus = ServiceStatus;
+        Coord = new Coodinates[3];
         
+        Coord[0] = new Coodinates
+        {
+            Lat = lat,
+            Long = lng
+        };
     }
+}
+
+
+public class Coodinates {
+    public double? Lat {get; set; }
+
+    public double? Long {get; set; }
+    
 }
 

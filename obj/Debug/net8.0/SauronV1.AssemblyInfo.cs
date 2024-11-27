@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SauronV1")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c8ef769c294729054972fc8fcce011971fe2fc3")]
 [assembly: System.Reflection.AssemblyProductAttribute("SauronV1")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SauronV1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

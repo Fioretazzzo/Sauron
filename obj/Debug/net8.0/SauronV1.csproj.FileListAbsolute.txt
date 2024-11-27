@@ -15,3 +15,4 @@ C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\refint\Sau
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.pdb
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.genruntimeconfig.cache
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\ref\SauronV1.dll
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.sourcelink.json
