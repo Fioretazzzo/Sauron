@@ -16,3 +16,4 @@ C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.p
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.genruntimeconfig.cache
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\ref\SauronV1.dll
 C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\obj\Debug\net8.0\SauronV1.sourcelink.json
+C:\Users\fiore\OneDrive\Escritorio\NET proj\SauronV1\bin\Debug\net8.0\GeoCoordinate.NetCore.dll

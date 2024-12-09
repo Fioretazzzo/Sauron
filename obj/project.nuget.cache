@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "VrBjSwOQVvI=",
+  "dgSpecHash": "1B7UC2VJhs8=",
   "success": true,
   "projectFilePath": "C:\\Users\\fiore\\OneDrive\\Escritorio\\NET proj\\SauronV1\\SauronV1.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\fiore\\.nuget\\packages\\geocoordinate.netcore\\1.0.0.1\\geocoordinate.netcore.1.0.0.1.nupkg.sha512",
     "C:\\Users\\fiore\\.nuget\\packages\\restsharp\\112.1.0\\restsharp.112.1.0.nupkg.sha512"
   ],
   "logs": []

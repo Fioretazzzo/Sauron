@@ -1,59 +1,85 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Text.Json;
+using Microsoft.VisualBasic;
 using RestSharp;
+using GeoCoordinatePortable;
 
 namespace SauronV1
 {
     public class SauronV1{
+        public static Notifications notificador = new Notifications();
         //public static List<Internos> internos = null;
 
         public static async Task StartProcess(){
 
-            int pages = 1;
-            bool primeraData = false;
-            List<ColesData>? listCompleto = null;
-            List<Internos>? listInternos;
-            
+            //var notificador = new Notifications();
+            bool primeraDataCreada = false;
+            _ = notificador.SendNotificationAsync("Primera vuelta de coles", "Testeando la primera vuelta de los coles", "1");
+            List<Internos>? listOficialInternos = null;
 
-            while (pages < 4){
+            while(true){
 
+                int pages = 1;
                 
-                RestResponse response = await ScrapeData15(pages);
-                
-                //pregunta si el GET fue exitoso con un codigo 200 OK
-                var CheckResult = CheckAddData15(response, pages, listCompleto);
+                List<ColesData>? listCompleto = null;
+                List<Internos>? listInternos = null;
 
-                if(CheckResult.Estado){
+                while (pages < 4){
 
-                    try{
-                        listCompleto = CheckResult.Data;
+                    
+                    RestResponse response = await ScrapeData15(pages);
+                    
+                    //pregunta si el GET fue exitoso con un codigo 200 OK
+                    var CheckResult = CheckAddData15(response, pages, listCompleto);
 
-                        if(!primeraData){
+                    if(CheckResult.Estado){
 
-                            
-                            listInternos = createInternosData(listCompleto);
+                        try{
+                            listCompleto = CheckResult.Data;
+
+                           
+                                listInternos = createInternosData(listCompleto);
+                          
                             
                         }
-                        
-                    }
-                    catch(Exception ex){
-                        Console.WriteLine($"ERROR CREANDO LA LISTA DE INTERNOS: {ex}");
+                        catch(Exception ex){
+                            Console.WriteLine($"ERROR CREANDO LA LISTA DE INTERNOS: {ex}");
+                        }
+
+                        pages++;
+
+                    }else{
+                        Console.WriteLine("Esperando 15 segundos para volver a preguntar");
+                        System.Threading.Thread.Sleep(15000);
                     }
 
-                }else{
-                    Console.WriteLine("Esperando un rato para volver a preguntar");
+                }
+                //si es la primera ejecucion se ejecuta esto para definir la lista en donde se va a trabajar
+                if(!primeraDataCreada){
+                    listOficialInternos = listInternos;
+                    primeraDataCreada = true;
+                }
+                else{
+
+                    try{
+
+                        listOficialInternos = UpdateData(listOficialInternos, listInternos);
+
+                    }catch(Exception ex){
+
+                        Console.WriteLine($"ERROR/EXCEPCION AL HACER UPDATE: {ex}");
+                        _ = await notificador.SendNotificationAsync("Error/Excepcion data update",
+                        $"Excepcion:{ex}",
+                        "1");
+
+                    }
+
                 }
 
-             
-                pages++;
+                System.Threading.Thread.Sleep(15000);
+                
             }
-            primeraData = true;
-            listCompleto = null;
-            
-
-
-
         }
 
         public static List<Internos>? createInternosData(List<ColesData>? listCompleto){
@@ -68,11 +94,10 @@ namespace SauronV1
                 foreach(ColesData colectivos in listCompleto){
                 
                     //Console.WriteLine("Interno "+colectivos.Number+" : \tlat: "+colectivos.Lat+"\tlong: "+colectivos.Lng);
-                    Internos auxInter = new Internos(colectivos.Number, colectivos.Name, colectivos.ActivoEnApp, colectivos.Status, colectivos.Lat, colectivos.Lng);
+                    Internos auxInter = new Internos(colectivos.Number, colectivos.Name, colectivos.ActivoEnApp, colectivos.Status, colectivos.Lat, colectivos.Lng, colectivos.Id);
 
                     listInternos.Add(auxInter);
 
-                    //listInternos = auxInter;
                 }
 
                 
@@ -84,13 +109,201 @@ namespace SauronV1
 
         }
 
-        /*public static List<Internos>? UpdateData(List<Internos> ListInternos){
+        public static List<Internos>? UpdateData(List<Internos> OldData, List<Internos> NewData){
+            //check OldData cantidad de coordenadas q tiene en el array Coord
+            foreach ( Internos interno in OldData ){
+                int i = 0;
 
+                while(i < interno.Coord.GetLength(0)){
+                    if(interno.Coord[i] == null){
+                        break;
+                    }
+                    i++;
+                }
+
+                //busca los internos q se correspondan segun su numero
+                foreach ( Internos newInterno in OldData ){
+                    if(interno.Numero == newInterno.Numero){
+
+                        interno.Linea = newInterno.Linea;
+                        interno.Oculto = newInterno.Oculto;
+                        interno.OnBase = newInterno.OnBase;
+                        interno.ServiceStatus = newInterno.ServiceStatus;
+
+                        if(newInterno.Coord[0] != null){
+                            //VOLVER A FIJARME AQUI QUE ONDA CON ESTO
+
+                            if( i < 3 ){
+                                interno.Coord[i] = newInterno.Coord[0];
+                            }
+
+                            else{
+                                //shift a la izquierda
+                                interno.Coord[0] = interno.Coord[1];
+                                interno.Coord[1] = interno.Coord[2];
+                                interno.Coord[2] = newInterno.Coord[0];
+                            }
+
+                        }
+                        else{
+                            Console.WriteLine("ERROR AL HACER UPDATE DE LA DATA, LA NUEVA COORDINADA ES NULA");
+                        }
+                        
+                        break;
+                    }
+
+                }
+            }
+            Console.WriteLine("DATA DE LOS COLES UPDATEADA");
+            
+            _ =  notificador.SendNotificationAsync("DATA UPDATEADA",
+                        $"Se hizo el update de la data de los internos correctamente",
+                        "1");
+
+            return OldData;
         }
 
-        public static List<Internos> CheckToSleep(List<Internos> ListInternos){
 
-        }*/
+        /*public static List<Internos> CheckToSleep(List<Internos> ListOficialInternos){
+            //check para saber si esta en la base el cole
+            GeoCoordinate BaseUriarte = new GeoCoordinate(-27.814322487516797, -64.25720838995561);
+
+            foreach(Internos interno in ListOficialInternos){
+                if(interno.Coord[2] != null){
+                    //aqui tengo q hacer algunas verificaciones y parseos xq GeoCoordinate no acepte los nulls asi q tengo q sanitizar las coordenadas primero
+                    double Dist0 = -1;
+                    double Dist1 = -1;
+                    double Dist2 = -1;
+
+
+                    //primera coordenada del array
+                    
+                    var Coord0 = ParseToGeoCoord(interno.Coord[0].Lat, interno.Coord[0].Long);
+                    
+                    if(Coord0 != null){
+                        Dist0 = BaseUriarte.GetDistanceTo(Coord0);
+                    }
+
+                    //segunda coordenada del array
+                    var Coord1 = ParseToGeoCoord(interno.Coord[1].Lat, interno.Coord[1].Long);
+                    
+                    if(Coord1 != null){
+                        Dist1 = BaseUriarte.GetDistanceTo(Coord1);
+                    }
+
+                    //tercera coordenada del array
+                    var Coord2 = ParseToGeoCoord(interno.Coord[2].Lat, interno.Coord[2].Long);
+
+                    if(Coord2 != null){
+                        Dist2 = BaseUriarte.GetDistanceTo(Coord2);
+                    }
+
+                    int CountChecker = 0;
+
+                    if(Dist0 < 70 && Dist0 != -1){
+                        CountChecker++;
+                    }
+                    if(Dist1 < 70 && Dist1 != -1){
+                        CountChecker++;
+                    }
+                    if(Dist2 < 70 && Dist2 != -1){
+                        CountChecker++;
+                    }
+
+                    if(CountChecker >= 2){
+                        interno.OnBase = true;
+                        
+                    }
+
+                }
+                    
+            }
+        }
+        */
+        public static GeoCoordinate? ParseToGeoCoord(double? lat, double? lng){
+            try{
+
+                if(lat != null && lng != null){
+                double CoordLat = (double)lat;
+                double CoordLong = (double)lng;
+                GeoCoordinate Coordenada = new GeoCoordinate(CoordLat, CoordLong);
+
+                return Coordenada;
+                }
+            return null;
+            }catch(Exception ex){
+                Console.WriteLine($"EXCEPCION AL CONVERTIR COORDENADA A GEOCOORDINATE TYPE {ex}");
+                return null;
+            }
+            
+        }
+
+        public static async Task<RestResponse>? CambiarMostrarEnApp(int Id, bool mostrar) {
+
+            int modo;
+
+            //modo = 1 para MOSTRAR modo = 0 para OCULTAR
+            if(mostrar){
+                modo = 1;
+            }else{
+                modo = 0;
+            }
+
+            try{
+                var options = new RestClientOptions("https://api.santiagobus.com.ar")
+                {
+                  MaxTimeout = -1,
+                  UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest($"/api/internos/{Id}", Method.Put);
+                request.AddHeader("Accept", "application/json, text/plain, */*");
+                request.AddHeader("Accept-Language", "en-US,en;q=0.5");
+                request.AddHeader("Accept-Encoding", "gzip, deflate, br, zstd");
+                request.AddHeader("Content-Type", "application/json");
+                request.AddHeader("Authorization", "Bearer 267|EmDMZcnQUAf6qU0x930kjiArjzZcQRLKOGxj3278a71b26f4");
+                request.AddHeader("Origin", "https://panel.santiagobus.com.ar");
+                request.AddHeader("Connection", "keep-alive");
+                request.AddHeader("Referer", "https://panel.santiagobus.com.ar/");
+                request.AddHeader("Sec-Fetch-Dest", "empty");
+                request.AddHeader("Sec-Fetch-Mode", "cors");
+                request.AddHeader("Sec-Fetch-Site", "same-site");
+                request.AddHeader("Priority", "u=0");
+                request.AddHeader("Pragma", "no-cache");
+                request.AddHeader("Cache-Control", "no-cache");
+                request.AddHeader("TE", "trailers");
+                var body = @"{""activo_en_app"":"+modo+"}";
+                request.AddStringBody(body, DataFormat.Json);
+                RestResponse response = await client.ExecuteAsync(request);
+                Console.WriteLine(response.Content);
+
+                return response;
+            }catch(Exception ex){
+                if(mostrar){
+                    Console.WriteLine("ERROR CAMBIANDO A OCULTO DEL INTERNO");
+                _ = notificador.SendNotificationAsync($"ERROR OCULTANDO INTERNO",
+                $"SE PRODUJO UN ERROR AL OCULTAR UN INTERNO {ex}",
+                "1");                
+
+                }else{
+                    Console.WriteLine("ERROR CAMBIANDO A MOSTRAR DEL INTERNO");
+                _ = notificador.SendNotificationAsync($"ERROR MOSTRANDO INTERNO",
+                $"SE PRODUJO UN ERROR AL MOSTRAR UN INTERNO {ex}",
+                "1");
+                }
+                
+            }
+            
+            return null;
+            
+        }
+
+        public static double calcularDistancia(double lat1, double lng1, double lat2, double lng2){
+            var coordenada1 = new GeoCoordinate(lat1, lng1);
+            var coordenada2 = new GeoCoordinate(lat2, lng2);
+
+            return coordenada1.GetDistanceTo(coordenada2);
+        }
 
         public static async Task<RestResponse> ScrapeData15(int pages){
 
@@ -149,6 +362,8 @@ namespace SauronV1
             }catch(JsonException ex){
                 Console.WriteLine($"ERROR DESERIALIZANDO EL JSON, PAGINA {pages}: {ex.Message}");
 
+                //Notifications
+
                 //return error y muestra lo agarrado por el Try Catch
                 return DataResult<List<ColesData>>.Failure(ex.Message);
                 }
@@ -166,6 +381,7 @@ namespace SauronV1
     }
 }
 
+//clase hecha para poder pasar bien los parametros, si esta todo bien devulve el estado= true y la data, sino devuelve estado = false y la excepcion o sino un string con algun msj
 public class DataResult<T>
 {
     public T? Data { get; set; }
