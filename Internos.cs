@@ -14,7 +14,7 @@ public class Internos
 
     public bool OnBase {get; set; }
 
-    public TimeSpan? TimeSleep {get; set; }
+    public DateTime? TimeSleep {get; set; }
 
     public bool? OnStartLine {get; set; }
 
@@ -22,7 +22,7 @@ public class Internos
 
     public string ServiceStatus {get; set; }
 
-    public TimeSpan? TimeOutOfTrack {get; set; }
+    public DateTime? TimeOutOfTrack {get; set; }
 
     public int Id {get; set; }
 

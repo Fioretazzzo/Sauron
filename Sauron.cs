@@ -65,6 +65,7 @@ namespace SauronV1
                     try{
 
                         listOficialInternos = UpdateData(listOficialInternos, listInternos);
+                        listOficialInternos = await CheckToSleep(listOficialInternos);
 
                     }catch(Exception ex){
 
@@ -81,6 +82,10 @@ namespace SauronV1
                 
             }
         }
+
+        /*public static List<Internos> CheckWakeup(List<Internos> ListOficialInternos){
+
+        }*/
 
         public static List<Internos>? createInternosData(List<ColesData>? listCompleto){
 
@@ -164,20 +169,18 @@ namespace SauronV1
         }
 
 
-        /*public static List<Internos> CheckToSleep(List<Internos> ListOficialInternos){
+        public static async Task<List<Internos>> CheckToSleep(List<Internos> ListOficialInternos){
             //check para saber si esta en la base el cole
             GeoCoordinate BaseUriarte = new GeoCoordinate(-27.814322487516797, -64.25720838995561);
 
             foreach(Internos interno in ListOficialInternos){
-                if(interno.Coord[2] != null){
+                if(interno.Coord[2] != null && interno.Oculto != false){
                     //aqui tengo q hacer algunas verificaciones y parseos xq GeoCoordinate no acepte los nulls asi q tengo q sanitizar las coordenadas primero
                     double Dist0 = -1;
                     double Dist1 = -1;
                     double Dist2 = -1;
 
-
-                    //primera coordenada del array
-                    
+                    //primera coordenada del array 
                     var Coord0 = ParseToGeoCoord(interno.Coord[0].Lat, interno.Coord[0].Long);
                     
                     if(Coord0 != null){
@@ -212,14 +215,62 @@ namespace SauronV1
 
                     if(CountChecker >= 2){
                         interno.OnBase = true;
-                        
+                        var ResCambio = await CambiarMostrarEnApp(interno.Id, false);
+                        if(ResCambio.IsSuccessStatusCode){
+                            _ = notificador.SendNotificationAsync($"SE OCULTO EL INTERNO: {interno.Numero}",
+                             "Se oculto el interno en la app xq marca que esta en la base de la pija", "1");
+                        }
                     }
 
-                }
-                    
+                    if(Coord0 != null && Coord1 != null && Coord2 != null){
+                        if(Coord0.GetDistanceTo(Coord1) + Coord1.GetDistanceTo(Coord2) < 100.0){
+                            var ResCambio = await CambiarMostrarEnApp(interno.Id, false);
+                            if(ResCambio != null){
+                                if(ResCambio.IsSuccessStatusCode){
+                                    interno.Oculto = true;
+                                _ = notificador.SendNotificationAsync($"SE OCULTO EL INTERNO: {interno.Numero}",
+                                 "Se oculto el interno en la app xq anda sin moverse hace rato", "1");
+                                }
+                            }
+                        }
+                    }
+                    else if(await EsconderColeDormido(Coord0, Coord1, interno)){
+                        interno.Oculto = true;
+                    }
+                    //en teoria nunca tendria q entrar aqui por el checkeo q se le hizo antes
+                    //lpm q ganas de unas empanadas caprese q tengo
+                    else if(await EsconderColeDormido(Coord1, Coord2, interno)){
+                        interno.Oculto = true;
+                    }
+                    else if(await EsconderColeDormido(Coord0, Coord2, interno)){
+                        interno.Oculto = true;
+                    }
+
+                    if(interno.Oculto){
+                        interno.TimeSleep = DateTime.Now;
+                    }
+
+                }   
             }
+            return ListOficialInternos;
         }
-        */
+
+        public static async Task<bool> EsconderColeDormido(GeoCoordinate? C1, GeoCoordinate? C2, Internos interno){
+            if( C1 != null && C2 != null){
+                if(C1.GetDistanceTo(C2) < 100.0){
+                    var ResCambio = await CambiarMostrarEnApp(interno.Id, false);
+                    if(ResCambio != null){
+                        if(ResCambio.IsSuccessStatusCode){
+                        _ = notificador.SendNotificationAsync($"SE OCULTO EL INTERNO: {interno.Numero}",
+                         "Se oculto el interno en la app xq anda sin moverse hace rato", "1");
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
         public static GeoCoordinate? ParseToGeoCoord(double? lat, double? lng){
             try{
 
@@ -242,7 +293,7 @@ namespace SauronV1
 
             int modo;
 
-            //modo = 1 para MOSTRAR modo = 0 para OCULTAR
+            //modo = 1/true para MOSTRAR modo = 0/false para OCULTAR
             if(mostrar){
                 modo = 1;
             }else{
