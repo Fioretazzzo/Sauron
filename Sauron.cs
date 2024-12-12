@@ -133,7 +133,7 @@ namespace SauronV1
                 foreach(ColesData colectivos in listCompleto){
                 
                     //Console.WriteLine("Interno "+colectivos.Number+" : \tlat: "+colectivos.Lat+"\tlong: "+colectivos.Lng);
-                    Internos auxInter = new Internos(colectivos.Number, colectivos.Name, colectivos.ActivoEnApp, colectivos.Status, colectivos.Lat, colectivos.Lng, colectivos.Id);
+                    Internos auxInter = new Internos(colectivos.Number, colectivos.Name, !colectivos.ActivoEnApp, colectivos.Status, colectivos.Lat, colectivos.Lng, colectivos.Id);
 
                     listInternos.Add(auxInter);
 
@@ -197,9 +197,9 @@ namespace SauronV1
             }
             Console.WriteLine("DATA DE LOS COLES UPDATEADA");
             
-            _ =  notificador.SendNotificationAsync("DATA UPDATEADA",
+            /*_ =  notificador.SendNotificationAsync("DATA UPDATEADA",
                         $"Se hizo el update de la data de los internos correctamente",
-                        "1");
+                        "1");*/
 
             return OldData;
         }
