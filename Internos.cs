@@ -16,7 +16,7 @@ public class Internos
 
     public DateTime? TimeSleep {get; set; }
 
-    public bool? OnStartLine {get; set; }
+    public bool OnStartLine {get; set; }
 
     public bool Oculto {get; set; }
 
@@ -26,13 +26,16 @@ public class Internos
 
     public int Id {get; set; }
 
+
     public Internos(string numero, string linea, bool oculto, string ServiceStatus, double? lat, double? lng, int Id){
         this.Numero = numero;
         this.Linea = linea;
         this.Oculto = oculto;
         this.ServiceStatus = ServiceStatus;
         this.Id = Id;
-        Coord = new Coodinates[3];
+        this.OnBase = false;
+        this.OnStartLine = false;
+        Coord = new Coodinates[5];
         
         Coord[0] = new Coodinates
         {
