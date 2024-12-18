@@ -210,7 +210,7 @@ namespace SauronV1
             GeoCoordinate BaseUriarte = new GeoCoordinate(-27.814322487516797, -64.25720838995561);
 
             foreach(Internos interno in ListOficialInternos){
-                if(interno.Coord[4] != null && !interno.Oculto && !interno.OnStartLine){
+                if(interno.Coord[4] != null && !interno.Oculto){
                     //aqui tengo q hacer algunas verificaciones y parseos xq GeoCoordinate no acepte los nulls asi q tengo q sanitizar las coordenadas primero
                     double Dist0 = -1;
                     double Dist1 = -1;
@@ -301,9 +301,18 @@ namespace SauronV1
                     }
                     #endregion
 
-                    if(await OcultarColeFueraBase(Coord0, Coord1, Coord2, Coord3, Coord4, interno)){
+                    //esto es asi un if dentro de otro xq no los puedo meter juntos ya que altera el resultado del valor de la llamada a la func OcultarColeFueraBase()
+                    //los cambios se hacen dentro de la func y dsp de eso tira true para actualizar la data q tengo del interno
+                    if(!interno.OnStartLine){
+                        if(await OcultarColeFueraBase(Coord0, Coord1, Coord2, Coord3, Coord4, interno)){
                         interno.Oculto = true;
-                    };
+                        }
+                    }
+                    else if(interno.Oculto){
+                        CambiarMostrarEnApp(interno.Id, true);
+                    }
+
+                    
 
                     // 11/12/24 08:17 revisar esto en q valor inicia Oculto cuando se crea el objeto
                     if(interno.Oculto){
